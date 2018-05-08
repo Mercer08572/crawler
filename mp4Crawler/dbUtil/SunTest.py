@@ -5,6 +5,7 @@
 # file : TestSun
 import configparser
 import os
+import urllib.parse
 
 class SunTest:
     def iniReader(self):
@@ -23,7 +24,11 @@ class SunTest:
 
         print(db);
 
+    def joinurl(self):
+        return urllib.parse.urljoin("http://www.baidu.com/qwer/asdf/","/abc/123/a.html");
+
 
 
 ts = SunTest();
-ts.iniReader();
+url = ts.joinurl();
+print(url);

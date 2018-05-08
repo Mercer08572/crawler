@@ -3,7 +3,7 @@
 # datatime : 2018/4/27 13:26
 # author : badbugu17
 # file : MysqlUtil
-from mp4Crawler.dbUtil import ConnSingleton
+from mp4Crawler.dbUtil.ConnSingleton import ConnSingleton
 
 
 class MysqlDMLUtil:
@@ -38,6 +38,9 @@ class MysqlDMLUtil:
 
         cursor.execute(sqlStr);
         dataTup = cursor.fetchall();
+
+        # 关闭连接
+        conn.close_cursor();
 
         return dataTup;
 
