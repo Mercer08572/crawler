@@ -22,13 +22,12 @@ class MysqlDMLUtil:
         cursor.execute(sql);
 
         maxValue = cursor.fetchone();
-        maxValue = int(maxValue); # 转换为int类型
-
-        maxValue += 1; # 获取最大的主键值，可直接使用
 
         if maxValue is None:
             return 0;
         else:
+            maxValue = int(maxValue);  # 转换为int类型
+            maxValue += 1;  # 获取最大的主键值，可直接使用
             return maxValue;
 
     def querySql(self,sqlStr):
@@ -43,6 +42,19 @@ class MysqlDMLUtil:
         conn.close_cursor();
 
         return dataTup;
+
+    def execSql(self,sqlStr):
+        # 执行非查询语句
+        flag = 1; # 1执行成功 2执行失败
+
+        try:
+            conn = ConnSingleton();
+            cursor = conn.get_cursor();
+            cursor.execute(sqlStr);
+        except Exception:
+            flag = 0;
+
+        return flag;
 
     def _getTablePrimaryKey(self,tablename):
         # 获取表的主键
@@ -60,6 +72,7 @@ class MysqlDMLUtil:
                 break;
 
         return primarykey
+
 
 
 
