@@ -7,6 +7,13 @@ import configparser
 import os
 import urllib.parse
 
+import time
+
+from bs4 import BeautifulSoup
+
+from mp4Crawler.entity.CrawlUrl import CrawlUrl
+
+
 class SunTest:
     def iniReader(self):
         connectInfo_path = os.path.abspath("..");
@@ -27,8 +34,63 @@ class SunTest:
     def joinurl(self):
         return urllib.parse.urljoin("http://www.baidu.com/qwer/asdf/","/abc/123/a.html");
 
+    def dxFunction(self,dx):
+        print(dx.id);
+        print(dx.url);
+        print(dx.createDate);
+        print(dx.typeid);
+
+    def bsTest(self,html_doc):
+        soup = BeautifulSoup(html_doc);
+
+        print("\n结构文档\n")
+        print(soup.prettify());
+        print();
+        print("soup.title:",soup.title);
+        print("soup.title.name:",soup.title.name);
+        print("soup.title.string:",soup.title.string);
+        print("soup.title.parent.name:",soup.title.parent.name);
+        print("soup.p:",soup.p);
+        print("soup.p[\"class\"]:",soup.p["class"]);
+        print("soup.find_all(\"p\"):",soup.find_all("p"));
+        print("soup.find(id=\"link3\"):",soup.find(id="link3"));
+        print("soup.a[\"href\"]:",soup.a["href"]);
+
+        print()
+        print("循环")
+        for link in soup.find_all("a"):
+            print(link);
+
+
 
 
 ts = SunTest();
-url = ts.joinurl();
-print(url);
+# url = ts.joinurl();
+# print(url);
+#
+# print("\n参数类型为对象\n")
+# dx = CrawlUrl();
+# dx.id = 1;
+# dx.url = "http://www.baidu.com";
+# readtime = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+# dx.createDate = readtime;
+# dx.typeid = "1";
+# ts.dxFunction(dx);
+
+
+html_doc = """
+<html><head><title>The Dormouse's story</title></head>
+<body>
+<p class="title"><b>The Dormouse's story</b></p>
+
+<p class="story">Once upon a time there were three little sisters; and their names were
+<a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
+<a href="http://example.com/lacie" class="sister" id="link2">Lacie</a> and
+<a href="http://example.com/tillie" class="sister" id="link3">Tillie</a>;
+and they lived at the bottom of a well.</p>
+
+<p class="story">...</p>
+"""
+
+ts.bsTest(html_doc);
+
