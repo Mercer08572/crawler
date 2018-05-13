@@ -7,12 +7,18 @@ from mp4Crawler.dbUtil.MysqlDMLUtil import MysqlDMLUtil
 
 class DBOperation:
 
-    def addWaitForTable(self,new_url):
+    def addWaitForTable(self,crawlUrl):
         dbhelp = MysqlDMLUtil();
-
-        # PS：这里先使用querysql这个方法，以后会修改为别的方法操作插入语句
 
         # 获取主键最大值
         maxPkValue = dbhelp.getMaxPrimaryKeyValue("PC_WaitForCrawl");
 
-        insertSql = " INSERT INTO PC_WaitForCrawl(id,url,createDate,typeid) values ("+maxPkValue+",'','',)"
+        insertSql = " INSERT INTO PC_WaitForCrawl(id,url,createDate,typeid) values ("+maxPkValue+",'"+crawlUrl.url+"','"+crawlUrl.createDate+"',"+crawlUrl.typeid+")";
+
+        flag = dbhelp.execSql(insertSql);
+
+        return flag;
+
+    def addCompleteTable(self,crawlUrl):
+        dbhelp = MysqlDMLUtil();
+
