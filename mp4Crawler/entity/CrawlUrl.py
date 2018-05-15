@@ -9,3 +9,6 @@ class CrawlUrl:
     url = None;
     createDate = None;
     typeid = None;
+    years = None;
+    name = None;
+    memo = None;

@@ -61,6 +61,10 @@ class SunTest:
         for link in soup.find_all("a"):
             print(link);
 
+        print("\n新方法:")
+        print(soup.find_all("a","sister"));
+
+
 
 
 
