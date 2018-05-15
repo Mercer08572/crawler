@@ -12,6 +12,8 @@ import time
 from bs4 import BeautifulSoup
 
 from mp4Crawler.entity.CrawlUrl import CrawlUrl
+from mp4Crawler.scheduler.WebPageDownloader import WebPageDownloader
+from mp4Crawler.scheduler.WebPageParser import WebPageParser
 
 
 class SunTest:
@@ -64,6 +66,17 @@ class SunTest:
         print("\n新方法:")
         print(soup.find_all("a","sister"));
 
+    def crawTest(self):
+        html = WebPageDownloader();
+        parser = WebPageParser();
+        htmlDoc = html.htmlDownload("http://www.mp4ba.net/forum-mp4ba-1-1.html")
+        parser.parserListPage(htmlDoc);
+
+    def sqlstest(self):
+        insertSql = " INSERT INTO PC_WaitForCrawl(id,url,createDate,typeid,years,name,memo) values ('%s')" %(1);
+        print(insertSql);
+
+
 
 
 
@@ -96,5 +109,8 @@ and they lived at the bottom of a well.</p>
 <p class="story">...</p>
 """
 
-ts.bsTest(html_doc);
+# ts.bsTest(html_doc);
 
+ts.crawTest();
+
+# ts.sqlstest();

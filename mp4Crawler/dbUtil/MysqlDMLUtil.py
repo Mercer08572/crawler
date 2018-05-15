@@ -22,11 +22,12 @@ class MysqlDMLUtil:
         cursor.execute(sql);
 
         maxValue = cursor.fetchone();
+        # print(maxValue);
 
-        if maxValue is None:
-            return 0;
+        if maxValue == (None,):
+            return 1;
         else:
-            maxValue = int(maxValue);  # 转换为int类型
+            maxValue = int(maxValue[0]);  # 转换为int类型
             maxValue += 1;  # 获取最大的主键值，可直接使用
             return maxValue;
 
@@ -51,7 +52,8 @@ class MysqlDMLUtil:
             conn = ConnSingleton();
             cursor = conn.get_cursor();
             cursor.execute(sqlStr);
-        except Exception:
+        except Exception as exception:
+            print(exception)
             flag = 0;
 
         return flag;
