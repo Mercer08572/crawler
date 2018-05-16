@@ -24,6 +24,8 @@ class MysqlDMLUtil:
         maxValue = cursor.fetchone();
         # print(maxValue);
 
+        conn.close_cursor(); # 关闭连接
+
         if maxValue == (None,):
             return 1;
         else:
@@ -52,6 +54,7 @@ class MysqlDMLUtil:
             conn = ConnSingleton();
             cursor = conn.get_cursor();
             cursor.execute(sqlStr);
+            conn.close_cursor(); # 关闭连接
         except Exception as exception:
             print(exception)
             flag = 0;
@@ -72,6 +75,8 @@ class MysqlDMLUtil:
             if column_key == "PRI":
                 primarykey = row[0];
                 break;
+
+        connsing.close_cursor();
 
         return primarykey
 

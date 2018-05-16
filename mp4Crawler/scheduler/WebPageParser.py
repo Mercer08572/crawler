@@ -70,7 +70,6 @@ class WebPageParser:
 
             waitList.createDate = nowTime;
 
-
             result = dbo.addWaitForTable(waitList);
 
             if (result == 1):
