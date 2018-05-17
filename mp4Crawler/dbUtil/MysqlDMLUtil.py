@@ -61,6 +61,26 @@ class MysqlDMLUtil:
 
         return flag;
 
+    def batchExecSql(self,sqlList):
+        """同类型SQL连续超过3次执行，就需要使用此方法"""
+
+        conn = ConnSingleton(); # 实例化连接类
+        cursor = conn.get_cursor(); # 获取游标
+        # 循环 执行SQL语句
+        count = 1;
+        for sql in sqlList:
+            try:
+                cursor.execute(sql);
+                count += 1; # 运行计数
+            except Exception as e:
+                print(e);
+                print("错误:第",count,"条SQL语句：",sql,"插入数据库失败！")
+                continue
+        conn.close_cursor();
+
+        return count;
+
+
     def _getTablePrimaryKey(self,tablename):
         # 获取表的主键
         connsing =  ConnSingleton(); # 实例化数据库操作类
@@ -78,7 +98,7 @@ class MysqlDMLUtil:
 
         connsing.close_cursor();
 
-        return primarykey
+        return primarykey;
 
 
 
