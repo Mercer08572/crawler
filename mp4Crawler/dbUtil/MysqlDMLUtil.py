@@ -12,10 +12,10 @@ class MysqlDMLUtil:
     def getMaxPrimaryKeyValue(self,tablename):
         # 获取最大的主键值
 
+        primarykey = self._getTablePrimaryKey(tablename);
+
         conn = ConnSingleton();
         cursor = conn.get_cursor();
-
-        primarykey = self._getTablePrimaryKey(tablename);
 
         sql = " SELECT MAX("+primarykey+") FROM "+tablename+" ";
 
@@ -74,7 +74,7 @@ class MysqlDMLUtil:
                 count += 1; # 运行计数
             except Exception as e:
                 print(e);
-                print("错误:第",count,"条SQL语句：",sql,"插入数据库失败！")
+                print("[<MysqlDMLUtil>错误]:第",count,"条SQL语句：",sql,"插入数据库失败！")
                 continue
         conn.close_cursor();
 

@@ -29,54 +29,60 @@ class WebPageParser:
         # 获取页面上所有的电影连接
         detailUrlList = soup.find_all("a","s xst");
 
+        sqlList = []; # 拼接的SQL集合
+        index = dbo.getMaxPrimaryKeyValue("PC_WaitForCrawl"); # 获取主键最大值
+
         for tagA in detailUrlList:
-            waitList = CrawlUrl();
-            original = tagA.string;
+            # 调用解析方法，解析出需要的数据
+            waitList = self.parserInfo(tagA);
 
-            # 解析出描述，“[]”中的内容
-            leftIndex = original.index("[");
-            rightIndex = original.index("]");
-            rightIndex = rightIndex + 1;
-            memo = original[leftIndex:rightIndex];
+            dbo.addWaitForTableNew(waitList,sqlList,index);
+            index += 1;
 
-            # 去除 [] 获取文本内容
-            memo = memo[1:-1];
+        count = dbo.batchExecSql(sqlList);
+        print("[<WebPageParser>提示]:批量SQL共",len(sqlList)+1,"条，成功插入",count,"条!")
+        return;
 
-            # 原始信息去除 后面 [] 的信息
-            original = original[0:leftIndex];
 
-            # 解析出年份
-            firstSpace = original.index(" ");
-            years = original[0:firstSpace];
+    def parserInfo(self,tagA):
+        waitList = CrawlUrl();
+        original = tagA.string;
 
-            # 解析出标题
-            nameIndex = firstSpace + 1;
-            name = original[nameIndex:]
+        # 解析出描述，“[]”中的内容
+        leftIndex = original.index("[");
+        rightIndex = original.index("]");
+        rightIndex = rightIndex + 1;
+        memo = original[leftIndex:rightIndex];
 
-            # 解析出URL路径
-            url = tagA.get("href");
+        # 去除 [] 获取文本内容
+        memo = memo[1:-1];
 
-            # 封装进 waitList 中
-            waitList.name = name;
-            waitList.years = years;
-            waitList.memo = memo;
-            waitList.url = url;
+        # 原始信息去除 后面 [] 的信息
+        original = original[0:leftIndex];
 
-            # 临时赋值 ， 逻辑还没有想明白
-            waitList.typeid = 1;
+        # 解析出年份
+        firstSpace = original.index(" ");
+        years = original[0:firstSpace];
 
-            # 赋值创建时间
-            nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime());
+        # 解析出标题
+        nameIndex = firstSpace + 1;
+        name = original[nameIndex:]
 
-            waitList.createDate = nowTime;
+        # 解析出URL路径
+        url = tagA.get("href");
 
-            result = dbo.addWaitForTable(waitList);
+        # 封装进 waitList 中
+        waitList.name = name;
+        waitList.years = years;
+        waitList.memo = memo;
+        waitList.url = url;
 
-            if (result == 1):
-                print("提示：《",name,"》的信息已存入数据库");
-            else:
-                print("错误：《",name,"》的信息存入数据库失败");
-                break;
+        # 临时赋值 ， 逻辑还没有想明白
+        nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()); # 赋值创建时间
+        waitList.typeid = 1;
+        waitList.createDate = nowTime;
+
+        return waitList;
 
 
 
