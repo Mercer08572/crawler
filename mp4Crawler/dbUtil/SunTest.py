@@ -68,9 +68,12 @@ class SunTest:
 
     def crawTest(self):
         html = WebPageDownloader();
-        parser = WebPageParser();
-        htmlDoc = html.htmlDownload("http://www.mp4ba.net/forum-mp4ba-1-1.html")
-        parser.parserListPage(htmlDoc);
+        # parser = WebPageParser();
+        # htmlDoc = html.htmlDownload("http://www.mp4ba.net/forum-mp4ba-1-1.html") # 列表页
+        htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5985-1-1.html") # 明细页
+        # parser.parserListPage(htmlDoc);
+        soup = BeautifulSoup(htmlDoc)
+        print(soup)
 
     def sqlstest(self):
         insertSql = " INSERT INTO PC_WaitForCrawl(id,url,createDate,typeid,years,name,memo) values ('%s')" %(1);

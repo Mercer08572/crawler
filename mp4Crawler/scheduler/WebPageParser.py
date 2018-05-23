@@ -16,7 +16,7 @@ class WebPageParser:
 
     def parserListPage(self,htmlDoc):
 
-        dbo = DBOperation()
+        dbo = DBOperation();
 
         # 解析列表页数据，获取待爬页面
         if htmlDoc is None:
@@ -39,7 +39,7 @@ class WebPageParser:
             dbo.addWaitForTableNew(waitList,sqlList,index);
             index += 1;
 
-        count = dbo.batchExecSql(sqlList);
+        count = dbo.batchExecSql(sqlList); # 批量执行拼接的SQL语句
         print("[<WebPageParser>提示]:批量SQL共",len(sqlList)+1,"条，成功插入",count,"条!")
         return;
 
@@ -83,6 +83,16 @@ class WebPageParser:
         waitList.createDate = nowTime;
 
         return waitList;
+
+    def parserInfoPage(self,htmlDoc,crawlurl):
+        """解析详细信息页面，获取真正实用信息
+        :param htmlDoc 网页下载器下载的网页信息 
+        :param crawlurl 数据库中查询出的待爬数据
+        """
+        dbo = DBOperation() # 数据库操作类
+
+
+
 
 
 
