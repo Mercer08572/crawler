@@ -70,10 +70,16 @@ class SunTest:
         html = WebPageDownloader();
         # parser = WebPageParser();
         # htmlDoc = html.htmlDownload("http://www.mp4ba.net/forum-mp4ba-1-1.html") # 列表页
-        htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5985-1-1.html") # 明细页
+        htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5986-1-1.html") # 明细页
         # parser.parserListPage(htmlDoc);
-        soup = BeautifulSoup(htmlDoc)
-        print(soup)
+        soup = BeautifulSoup(htmlDoc,"html.parser")
+        # print(soup)
+        divtop = soup.find_all(id = "top");
+        for div in divtop:
+            previous = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling;  # name1
+            previous  = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling; # name2
+            print(previous);
+
 
     def sqlstest(self):
         insertSql = " INSERT INTO PC_WaitForCrawl(id,url,createDate,typeid,years,name,memo) values ('%s')" %(1);

@@ -8,6 +8,8 @@ import time
 from bs4 import BeautifulSoup
 
 from mp4Crawler.entity.CrawlUrl import CrawlUrl
+from mp4Crawler.entity.DownloadUrl import DownloadUrl
+from mp4Crawler.entity.UsefulData import UsefulData
 from mp4Crawler.scheduler.DBOperation import DBOperation
 
 
@@ -90,6 +92,22 @@ class WebPageParser:
         :param crawlurl 数据库中查询出的待爬数据
         """
         dbo = DBOperation() # 数据库操作类
+
+        usefulData = UsefulData();  # 解析出的数据储存实体
+        downloadUrl = DownloadUrl();  # URL储存实体
+
+        index = dbo.getMaxPrimaryKeyValue("PC_ResultData");
+
+        # 基础数据赋值
+        usefulData.id = index;
+        usefulData.typeid = crawlurl.typeid;
+        usefulData.name = crawlurl.name;
+        usefulData.years = crawlurl.years;
+        usefulData.memo = crawlurl.memo;
+
+        soup = BeautifulSoup(htmlDoc,"html.parser");
+
+
 
 
 
