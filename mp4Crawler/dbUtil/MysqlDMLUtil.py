@@ -31,8 +31,6 @@ class MysqlDMLUtil:
             conn.close_cursor();  # 关闭连接
 
 
-
-
         if maxValue == (None,):
             return 1;
         else:
@@ -59,16 +57,17 @@ class MysqlDMLUtil:
 
     def execSql(self,sqlStr):
         # 执行非查询语句
-        flag = 1; # 1执行成功 2执行失败
+        flag = 1; # 1执行成功 0执行失败
 
         try:
             conn = ConnSingleton();
             cursor = conn.get_cursor();
             cursor.execute(sqlStr);
-            conn.close_cursor(); # 关闭连接
         except Exception as exception:
             print(exception)
             flag = 0;
+        finally:
+            conn.close_cursor(); # 关闭连接
 
         return flag;
 
@@ -110,6 +109,7 @@ class MysqlDMLUtil:
                     break;
         except Exception as exception:
             print(exception);
+            raise exception;
         finally:
             connsing.close_cursor();
 

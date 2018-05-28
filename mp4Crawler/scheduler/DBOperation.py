@@ -3,6 +3,7 @@
 # author : badbugu17
 # file : DBOperation.py
 from mp4Crawler.dbUtil.MysqlDMLUtil import MysqlDMLUtil
+from mp4Crawler.entity.CrawlStatus import CrawlStatus
 
 
 class DBOperation:
@@ -93,6 +94,43 @@ class DBOperation:
             sqlList.append(urlInsertSql);
 
         return sqlList;
+
+    def querySql(self,sqlStr):
+        return self._dbhepl.querySql(sqlStr);
+
+    def getStatusById(self,id):
+        """通过ID获取爬取状态表"""
+
+        crawlStatus = CrawlStatus();
+
+        getStatusSql = " SELECT id,startUrl,endUrl,step,memo,count,lastCount,pageSize,pageNum,updatePageNum FROM PC_Status WHERE id = %d" % (
+            id);
+        dataTup = self._dbhepl.querySql(getStatusSql);
+        justOneStatus = dataTup[0];
+
+        # 封装数据，有点傻
+        crawlStatus.id = justOneStatus[0];
+        crawlStatus.startUrl = justOneStatus[1];
+        crawlStatus.endUrl = justOneStatus[2];
+        crawlStatus.step = justOneStatus[3];
+        crawlStatus.memo = justOneStatus[4];
+        crawlStatus.count = justOneStatus[5];
+        crawlStatus.lastCount = justOneStatus[6];
+        crawlStatus.pageSize = justOneStatus[7];
+        crawlStatus.pageNum = justOneStatus[8];
+        crawlStatus.updatePageNum = justOneStatus[9];
+
+        return crawlStatus;
+
+    def updateStatusByStatus(self,crawlStatus):
+        """根据status实体更新数据库中的status信息"""
+        isOk = 0; # 0 失败  1 成功
+
+        updateStatusSql = " UPDATE PC_Status SET startUrl = '%s',endUrl = '%s',step = %d,memo = '%d',count = %d,lastCount = %d,pageSize = %d,pageNum = %d,updatePageNum = %d WHERE id = %d" %(
+                crawlStatus.startUrl,crawlStatus.endUrl,crawlStatus.step,crawlStatus.memo,crawlStatus.count,crawlStatus.lastCount,crawlStatus.pageSize,crawlStatus.pageNum,crawlStatus.updatePageNum,crawlStatus.id);
+        isOk = self._dbhepl.execSql(updateStatusSql);
+
+        return isOk;
 
 
 

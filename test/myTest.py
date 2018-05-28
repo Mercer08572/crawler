@@ -8,9 +8,12 @@ def download():
     #     f.write(img);
 
     # 此方法可以下载动态图片
-    response = urllib.request.urlretrieve("http://wx2.sinaimg.cn/mw1024/0076BSS5ly1frqzyf68azg306t08ib29.gif","../output/mzdt.gif");
-    print(response);
-    print("写入成功")
+    # response = urllib.request.urlretrieve("http://wx2.sinaimg.cn/mw1024/0076BSS5ly1frqzyf68azg306t08ib29.gif","../output/mzdt.gif");
+    # print(response);
+    # print("写入成功")
+
+    tkp = "写入成功！";
+    print(tkp);
 
 
 def tessssst():

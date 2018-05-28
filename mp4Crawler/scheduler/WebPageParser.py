@@ -3,10 +3,12 @@
 # datatime : 2018/5/3 17:14
 # author : badbugu17
 # file : WebPageParser
+import math
 import time
 
 from bs4 import BeautifulSoup
 
+from mp4Crawler.entity.CrawlStatus import CrawlStatus
 from mp4Crawler.entity.CrawlUrl import CrawlUrl
 from mp4Crawler.entity.DownloadUrl import DownloadUrl
 from mp4Crawler.entity.UsefulData import UsefulData
@@ -148,7 +150,7 @@ class WebPageParser:
         htmldoc = downloadHtml.htmlDoc;
         dbo = DBOperation();
 
-        typeDic = {};
+        # typeDic = {}; 不再需要使用字典
 
         soup = BeautifulSoup(htmldoc,"html.parser");
 
@@ -175,12 +177,23 @@ class WebPageParser:
             moveSum__ = span.string;
             moveSum = moveSum__[1:-1];
 
+            crawlStatus = dbo.getStatusById(typeid); # 获取数据库中的爬取状态实体
+
             # 将电影数加入字典中
-            typeDic[typeid] = moveSum;
+            # typeDic[typeid] = moveSum;
 
-        # 获取一页的最大记录数
-        getPageSizeSql = " SELECT pageSize FROM PC_Status WHERE id = %d" % (typeid);
+            crawlStatus.typeid = typeid;
+            crawlStatus.count = moveSum;
 
+            # 计算网站最大页数 向上取整，不足1页按1页计算
+            pageNum = math.ceil(moveSum / crawlStatus.pageSize);
+            crawlStatus.pageNum = pageNum;
+
+            # 获取需要更新的页数
+            updatePageNum = math.ceil(crawlStatus.lastCount / crawlStatus.pageSize);
+            crawlStatus.updatePageNum = updatePageNum;
+
+            isOk = dbo.updateStatusByStatus(crawlStatus);
 
         return;
 
