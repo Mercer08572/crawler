@@ -69,16 +69,35 @@ class SunTest:
     def crawTest(self):
         html = WebPageDownloader();
         # parser = WebPageParser();
-        # htmlDoc = html.htmlDownload("http://www.mp4ba.net/forum-mp4ba-1-1.html") # 列表页
-        htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5986-1-1.html") # 明细页
+        htmlDoc = html.htmlDownload("http://www.mp4ba.net/") # 列表页
+        # htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5986-1-1.html") # 明细页
         # parser.parserListPage(htmlDoc);
         soup = BeautifulSoup(htmlDoc,"html.parser")
         # print(soup)
-        divtop = soup.find_all(id = "top");
-        for div in divtop:
-            previous = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling;  # name1
-            previous  = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling; # name2
-            print(previous);
+        # divtop = soup.find_all(id = "top");
+        # for div in divtop:
+            # previous = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling;  # name1
+            # previous  = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling; # name2
+            # print(previous);
+            # print(div.find("a").get("href"));
+
+        spans = soup.find_all("span","xg1 num");
+        for span in spans:
+            # sps = span.previous_sibling;
+
+            print(span);
+
+            print(span.previous_sibling);
+            spsa = span.parent;
+            print(spsa);
+
+            spsas = spsa.span;
+            spsast = spsas.string;
+            print(spsas);
+            print(spsast[1:-1],"\n")
+
+            # print(sps);
+            # print(span,"\n");
 
 
     def sqlstest(self):

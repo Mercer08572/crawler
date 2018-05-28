@@ -14,17 +14,24 @@ class MysqlDMLUtil:
 
         primarykey = self._getTablePrimaryKey(tablename);
 
-        conn = ConnSingleton();
-        cursor = conn.get_cursor();
+        try:
+            conn = ConnSingleton();
+            cursor = conn.get_cursor();
 
-        sql = " SELECT MAX("+primarykey+") FROM "+tablename+" ";
+            sql = " SELECT MAX(" + primarykey + ") FROM " + tablename + " ";
 
-        cursor.execute(sql);
+            cursor.execute(sql);
 
-        maxValue = cursor.fetchone();
-        # print(maxValue);
+            maxValue = cursor.fetchone();
+            # print(maxValue);
+        except Exception as exception:
+            print(exception);
+            raise exception;
+        finally:
+            conn.close_cursor();  # 关闭连接
 
-        conn.close_cursor(); # 关闭连接
+
+
 
         if maxValue == (None,):
             return 1;
@@ -35,14 +42,18 @@ class MysqlDMLUtil:
 
     def querySql(self,sqlStr):
         # 执行SQL语句，返回json数据类型
-        conn = ConnSingleton();
-        cursor = conn.get_cursor();
+        try:
+            conn = ConnSingleton();
+            cursor = conn.get_cursor();
 
-        cursor.execute(sqlStr);
-        dataTup = cursor.fetchall();
-
-        # 关闭连接
-        conn.close_cursor();
+            cursor.execute(sqlStr);
+            dataTup = cursor.fetchall();
+        except Exception as exception:
+            print(exception);
+            raise exception;
+        finally:
+            # 关闭连接
+            conn.close_cursor();
 
         return dataTup;
 
@@ -82,21 +93,25 @@ class MysqlDMLUtil:
 
 
     def _getTablePrimaryKey(self,tablename):
-        # 获取表的主键
-        connsing =  ConnSingleton(); # 实例化数据库操作类
-        cursor = connsing.get_cursor(); # 获取游标
 
-        sql =  " SELECT column_name,is_nullable,data_type,column_key FROM information_schema.columns WHERE table_schema = \'bdm278066281_db\' AND table_name = \'"+tablename+"\' ";
-        cursor.execute(sql);
+        try:
+            # 获取表的主键
+            connsing = ConnSingleton();  # 实例化数据库操作类
+            cursor = connsing.get_cursor();  # 获取游标
 
-        primarykey = "";
-        for row in cursor.fetchall():
-            column_key = row[3];
-            if column_key == "PRI":
-                primarykey = row[0];
-                break;
+            sql = " SELECT column_name,is_nullable,data_type,column_key FROM information_schema.columns WHERE table_schema = \'bdm278066281_db\' AND table_name = \'" + tablename + "\' ";
+            cursor.execute(sql);
 
-        connsing.close_cursor();
+            primarykey = "";
+            for row in cursor.fetchall():
+                column_key = row[3];
+                if column_key == "PRI":
+                    primarykey = row[0];
+                    break;
+        except Exception as exception:
+            print(exception);
+        finally:
+            connsing.close_cursor();
 
         return primarykey;
 

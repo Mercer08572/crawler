@@ -76,5 +76,23 @@ class DBOperation:
         # 检查数据，
         return
 
+    def addUsefulDataNew(self,usefulData,sqlList):
+        """拼接批量插入SQL语句，将数据放入SQLlist中，批量处理。
+        1、一个详情页面的信息放入一个sqlList中（目前版本）
+        返回：返回加入数据的SQL列表"""
+
+        usefulList = usefulData.urlEntity;  # 获取url列表
+
+        mainInsertSql = " INSERT INTO PC_ResultData(id,years,name,memo,typeid) VALUES (%d,'%s','%s','%s',%d)" % (
+            usefulData.id,usefulData.years,usefulData.name,usefulData.memo,usefulData.typeid);
+        sqlList.append(mainInsertSql);
+
+        for downloadUrl in usefulList:
+            urlInsertSql = " INSERT INTO PC_ResultUrl(id,rdid,name1,name2,url) VALUES (%d,%d,'%s','%s','%s')" % (
+                downloadUrl.id,downloadUrl.rdid,downloadUrl.name1,downloadUrl.name2,downloadUrl.url);
+            sqlList.append(urlInsertSql);
+
+        return sqlList;
+
 
 
