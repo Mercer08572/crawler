@@ -49,13 +49,13 @@ class WebPageParser:
             wait = self.parserInfo(tagA);
             wait.typeid = typeid;
 
-            dbo.addWaitForTableNew(wait,sqlList,index);
+            dbo.addWaitForTableNew(wait, sqlList, index);
             waitCrawlUrlList.append(wait);
             index += 1;
 
-        count = dbo.batchExecSqlJustForMp4ba(sqlList,waitCrawlUrlList); # 批量执行拼接的SQL语句
-        print("[<WebPageParser>提示]:批量SQL共",len(sqlList)+1,"条，成功插入",count,"条!")
-        return;
+        count, passCount = dbo.batchExecSqlJustForMp4ba(sqlList, waitCrawlUrlList); # 批量执行拼接的SQL语句
+        print("[<WebPageParser>提示]:批量SQL共", len(sqlList)+1, "条，重复", passCount, "条，成功插入", count, "条!")
+        return count, passCount, len(sqlList);
 
 
     def parserInfo(self,tagA):
@@ -144,7 +144,15 @@ class WebPageParser:
             # last setp urlIndex 自增
             urlIndex += 1;
 
-        return usefulData;
+        usefulData.urlEntity = urlList;
+
+        sqlList = [];  # 拼出的批量SQL存放
+        sqlList = dbo.addUsefulDataNew(usefulData,sqlList);
+
+        # 批量执行SQL语句
+        count = dbo.batchExecSql(sqlList);
+
+        return count;
 
     def parserStatus(self,downloadHtml):
         """解析首页电影数

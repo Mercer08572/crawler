@@ -29,6 +29,10 @@ class Aries:
 
     crawlStatus = dbo.getStatusById(typeid);  # 获取数据库中的爬取状态实体
 
+    listPageRowCount = 0;  # 爬取的列表页电影数
+    insertToTableCount = 0;  # 实际插入数据库中的记录数
+    repeatCount = 0;  #
+
     for i in range(crawlStatus.pageNum):
         # step 2 解析列表页，获取详细页的相关数据和URL放入数据库PC_WaitForCrawl表中
         startUrl = crawlStatus.endUrl;

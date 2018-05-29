@@ -81,11 +81,13 @@ class DBOperation:
         conn = ConnSingleton(); # 实例化连接类
         cursor = conn.get_cursor(); # 获取游标
         # 循环 执行SQL语句
-        count = 0;
+        count = 0;  # 成功执行的SQL语句
+        passCount = 0;  # 重复的SQL语句
         for index in range(len(sqlList)):
             try:
                 isPass = self._checkDateBeforeAdd(waitCrawlUrlList[index],cursor);
                 if isPass == 0:  # 0 不通过检查  1 通过检查
+                    passCount += 1;
                     print("[<MysqlDMLUtil>提示]：第",index+1,"条记录重复，不做处理！");
                     continue;
                 cursor.execute(sqlList[index]);
@@ -95,7 +97,7 @@ class DBOperation:
                 continue
         conn.close_cursor();
 
-        return count;
+        return count, passCount;
 
     def _checkDateBeforeAdd(self,crawlUrl,cursor):
         # 检查数据，
