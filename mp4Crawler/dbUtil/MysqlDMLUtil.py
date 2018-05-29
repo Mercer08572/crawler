@@ -55,6 +55,17 @@ class MysqlDMLUtil:
 
         return dataTup;
 
+    def querySqlWithoutOpenAndClost(self,sqlStr,cursor):
+        try:
+            cursor.execute(sqlStr);
+            dataTup = cursor.fetchall();
+        except Exception as e:
+            print(e);
+            raise e;
+        return dataTup;
+
+
+
     def execSql(self,sqlStr):
         # 执行非查询语句
         flag = 1; # 1执行成功 0执行失败
@@ -83,8 +94,7 @@ class MysqlDMLUtil:
                 cursor.execute(sql);
                 count += 1; # 运行计数
             except Exception as e:
-                print(e);
-                print("[<MysqlDMLUtil>错误]:第",count,"条SQL语句：",sql,"插入数据库失败！")
+                print("[<MysqlDMLUtil>错误]:第",count,"条SQL语句：",sql,"插入数据库失败！\n",e);
                 continue
         conn.close_cursor();
 

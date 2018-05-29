@@ -2,6 +2,7 @@
 # datatime : 2018/5/9 0:28
 # author : badbugu17
 # file : DBOperation.py
+from mp4Crawler.dbUtil.ConnSingleton import ConnSingleton
 from mp4Crawler.dbUtil.MysqlDMLUtil import MysqlDMLUtil
 from mp4Crawler.entity.CrawlStatus import CrawlStatus
 
@@ -73,9 +74,50 @@ class DBOperation:
         # 批量执行SQL语句，插入数据库
         return self._dbhepl.batchExecSql(sqlList);
 
-    def checkDateBeforeAdd(self,crawlUrl):
+    # 临时，只针对www.mp4ba.net网站的爬取使用到
+    def batchExecSqlJustForMp4ba(self,sqlList,waitCrawlUrlList):
+        """同类型SQL连续超过3次执行，就需要使用此方法"""
+
+        conn = ConnSingleton(); # 实例化连接类
+        cursor = conn.get_cursor(); # 获取游标
+        # 循环 执行SQL语句
+        count = 0;
+        for index in range(len(sqlList)):
+            try:
+                isPass = self._checkDateBeforeAdd(waitCrawlUrlList[index],cursor);
+                if isPass == 0:  # 0 不通过检查  1 通过检查
+                    print("[<MysqlDMLUtil>提示]：第",index+1,"条记录重复，不做处理！");
+                    continue;
+                cursor.execute(sqlList[index]);
+                count += 1; # 运行计数
+            except Exception as e:
+                print("[<MysqlDMLUtil>错误]:第",index+1,"条SQL语句：",sqlList[index],"插入数据库失败！\n",e);
+                continue
+        conn.close_cursor();
+
+        return count;
+
+    def _checkDateBeforeAdd(self,crawlUrl,cursor):
         # 检查数据，
-        return
+
+        isPass = 1;  # 0 不通过   1 通过
+
+        waitCheckSqlStr = " SELECT COUNT(id) FROM PC_WaitForCrawl WHERE url = '%s' " % (crawlUrl.url);
+        compCheckSqlStr = " SELECT COUNT(id) FROM PC_CompleteCrawl WHERE url = '%s' " % (crawlUrl.url);
+
+        waitExistTup = self._dbhepl.querySqlWithoutOpenAndClost(waitCheckSqlStr,cursor);
+        waitExist = waitExistTup[0][0];  # 如果大于0 说明已经在PC_WaitForCrawl表中已经存在 不需要再添加
+
+        if waitExist > 0:
+            isPass = 0;
+        else:
+            compExistTup = self._dbhepl.querySql(compCheckSqlStr);
+            compExist = compExistTup[0][0];  # 如果大于0 说明PC_CompleteCrawl表中已经存在 不需要再添加
+            if compExist > 0:
+                isPass = 0;
+
+
+        return isPass;
 
     def addUsefulDataNew(self,usefulData,sqlList):
         """拼接批量插入SQL语句，将数据放入SQLlist中，批量处理。
@@ -126,7 +168,7 @@ class DBOperation:
         """根据status实体更新数据库中的status信息"""
         isOk = 0; # 0 失败  1 成功
 
-        updateStatusSql = " UPDATE PC_Status SET startUrl = '%s',endUrl = '%s',step = %d,memo = '%d',count = %d,lastCount = %d,pageSize = %d,pageNum = %d,updatePageNum = %d WHERE id = %d" %(
+        updateStatusSql = " UPDATE PC_Status SET startUrl = '%s',endUrl = '%s',step = %d,memo = '%s',count = %d,lastCount = %d,pageSize = %d,pageNum = %d,updatePageNum = %d WHERE id = %d" %(
                 crawlStatus.startUrl,crawlStatus.endUrl,crawlStatus.step,crawlStatus.memo,crawlStatus.count,crawlStatus.lastCount,crawlStatus.pageSize,crawlStatus.pageNum,crawlStatus.updatePageNum,crawlStatus.id);
         isOk = self._dbhepl.execSql(updateStatusSql);
 

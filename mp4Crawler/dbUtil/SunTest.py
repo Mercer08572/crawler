@@ -12,6 +12,7 @@ import time
 from bs4 import BeautifulSoup
 
 from mp4Crawler.entity.CrawlUrl import CrawlUrl
+from mp4Crawler.entity.DownloadHtml import DownloadHtml
 from mp4Crawler.scheduler.WebPageDownloader import WebPageDownloader
 from mp4Crawler.scheduler.WebPageParser import WebPageParser
 
@@ -105,7 +106,14 @@ class SunTest:
         print(insertSql);
 
 
-
+    def crawlTest(self,url):
+        htmlDow = WebPageDownloader();
+        htmlParser = WebPageParser();
+        htmldoc = htmlDow.htmlDownload(url);
+        downloadHtml = DownloadHtml();
+        downloadHtml.url = url;
+        downloadHtml.htmlDoc = htmldoc;
+        htmlParser.parserListPage(downloadHtml);
 
 
 
@@ -139,6 +147,8 @@ and they lived at the bottom of a well.</p>
 
 # ts.bsTest(html_doc);
 
-ts.crawTest();
+# ts.crawTest();
 
 # ts.sqlstest();
+
+ts.crawlTest("http://www.mp4ba.net/forum-mp4ba-1-1.html");

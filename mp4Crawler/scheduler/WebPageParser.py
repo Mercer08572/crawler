@@ -20,13 +20,15 @@ class WebPageParser:
 
     def parserListPage(self,downloadHtml):
 
+        dbo = DBOperation();
         downUrl = downloadHtml.url;  # 下载页面的url地址
         downHtml = downloadHtml.htmlDoc;  # 下载页面的HTMLDOC
 
+        waitCrawlUrlList = []; # 为了减轻数据库负担，减少打开关闭连接的次数
+
         # 根据下载页面的URL地址可以获取电影类型 http://www.mp4ba.net/forum-mp4ba-2-1.html
         typeid = downUrl[-8:-7];
-
-        dbo = DBOperation();
+        typeid = int(typeid);
 
         # 解析列表页数据，获取待爬页面
         if downHtml is None:
@@ -44,19 +46,20 @@ class WebPageParser:
 
         for tagA in detailUrlList:
             # 调用解析方法，解析出需要的数据
-            waitList = self.parserInfo(tagA);
-            waitList.typeid = typeid;
+            wait = self.parserInfo(tagA);
+            wait.typeid = typeid;
 
-            dbo.addWaitForTableNew(waitList,sqlList,index);
+            dbo.addWaitForTableNew(wait,sqlList,index);
+            waitCrawlUrlList.append(wait);
             index += 1;
 
-        count = dbo.batchExecSql(sqlList); # 批量执行拼接的SQL语句
+        count = dbo.batchExecSqlJustForMp4ba(sqlList,waitCrawlUrlList); # 批量执行拼接的SQL语句
         print("[<WebPageParser>提示]:批量SQL共",len(sqlList)+1,"条，成功插入",count,"条!")
         return;
 
 
     def parserInfo(self,tagA):
-        waitList = CrawlUrl();
+        wait = CrawlUrl();
         original = tagA.string;
 
         # 解析出描述，“[]”中的内容
@@ -83,17 +86,17 @@ class WebPageParser:
         url = tagA.get("href");
 
         # 封装进 waitList 中
-        waitList.name = name;
-        waitList.years = years;
-        waitList.memo = memo;
-        waitList.url = url;
+        wait.name = name;
+        wait.years = years;
+        wait.memo = memo;
+        wait.url = url;
 
         # 临时赋值 ， 逻辑还没有想明白
         nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()); # 赋值创建时间
         # waitList.typeid = 1;
-        waitList.createDate = nowTime;
+        wait.createDate = nowTime;
 
-        return waitList;
+        return wait;
 
     def parserInfoPage(self,downloadHtml,crawlurl):
         """解析详细信息页面，获取真正实用信息
@@ -176,6 +179,7 @@ class WebPageParser:
             # 获取电影数量
             moveSum__ = span.string;
             moveSum = moveSum__[1:-1];
+            moveSum = int(moveSum);
 
             crawlStatus = dbo.getStatusById(typeid); # 获取数据库中的爬取状态实体
 
@@ -186,12 +190,17 @@ class WebPageParser:
             crawlStatus.count = moveSum;
 
             # 计算网站最大页数 向上取整，不足1页按1页计算
-            pageNum = math.ceil(moveSum / crawlStatus.pageSize);
+            pageNum = math.ceil(crawlStatus.count / crawlStatus.pageSize);
             crawlStatus.pageNum = pageNum;
 
             # 获取需要更新的页数
-            updatePageNum = math.ceil(crawlStatus.lastCount / crawlStatus.pageSize);
+            updatePageNum = math.ceil((crawlStatus.count - crawlStatus.lastCount) / crawlStatus.pageSize);
             crawlStatus.updatePageNum = updatePageNum;
+
+            # 将这次查询到count赋值给lastcount
+            crawlStatus.lastCount = moveSum;
+            # 将count的值清零
+            crawlStatus.count = 0;
 
             isOk = dbo.updateStatusByStatus(crawlStatus);
 
