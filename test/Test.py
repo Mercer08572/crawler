@@ -11,12 +11,12 @@ import pymysql
 # )
 
 connect = pymysql.Connect(
-    host="101.201.221.95",
+    host="101.201.211.96",
     port=3306,
-    user="bdm278066281",
+    user="bdm278066232",
     passwd="qqaazz888",
-    db="bdm278066281_db",
-    charset="utf8"
+    db="bdm278066261_db",
+    charset="utf_8"
 )
 
 cursor = connect.cursor();
