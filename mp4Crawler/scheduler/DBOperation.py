@@ -5,6 +5,7 @@
 from mp4Crawler.dbUtil.ConnSingleton import ConnSingleton
 from mp4Crawler.dbUtil.MysqlDMLUtil import MysqlDMLUtil
 from mp4Crawler.entity.CrawlStatus import CrawlStatus
+from mp4Crawler.entity.CrawlUrl import CrawlUrl
 
 
 class DBOperation:
@@ -56,6 +57,23 @@ class DBOperation:
             index, crawlUrl.url, crawlUrl.createDate, crawlUrl.typeid, crawlUrl.years, crawlUrl.name, crawlUrl.memo);
         sqlList.append(insertSql);
         return sqlList;
+
+    def getWaitByTop1(self):
+        """根据id获取待爬表实体"""
+        crawlUrl = CrawlUrl();
+        findSql = " SELECT id,url,createDate,typeid,years,name,memo FROM PC_WaitForCrawl LIMIT 0,1 ";
+        dataTup = self._dbhepl.querySql(findSql);
+        data = dataTup[0];
+        # 封装
+        crawlUrl.id = data[0];
+        crawlUrl.url = data[1];
+        crawlUrl.createDate = data[2];
+        crawlUrl.typeid = data[3];
+        crawlUrl.years = data[4];
+        crawlUrl.name = data[5];
+        crawlUrl.memo = data[6];
+
+        return crawlUrl;
 
     def deleteWaitFor(self,id):
         # 删除待爬表

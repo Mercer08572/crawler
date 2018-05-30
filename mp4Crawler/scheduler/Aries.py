@@ -28,22 +28,41 @@ class Aries:
     # 1、国产电影 2、港台电影 3、欧美电影 4、日韩电影 5、海外电影 6、动画电影
 
     crawlStatus = dbo.getStatusById(typeid);  # 获取数据库中的爬取状态实体
+    startUrl = crawlStatus.endUrl;
 
     listPageRowCount = 0;  # 爬取的列表页电影数
-    insertToTableCount = 0;  # 实际插入数据库中的记录数
-    repeatCount = 0;  #
+    insertToTableCount = 0;  # 实际插入数据库中的列表页记录数
+    repeatCount = 0;  # 重复的列表页记录数
 
     for i in range(crawlStatus.pageNum):
         # step 2 解析列表页，获取详细页的相关数据和URL放入数据库PC_WaitForCrawl表中
-        startUrl = crawlStatus.endUrl;
+        # startUrl = crawlStatus.endUrl;
         listHtmlDoc = webPageDownloader.htmlDownload(startUrl);
         listDownloadHtml = DownloadHtml(); # 列表页下载后页面实体
         listDownloadHtml.url = startUrl;
         listDownloadHtml.htmlDoc = listHtmlDoc;
 
-        webPageParser.parserListPage(listDownloadHtml);
+        succCount, passCount, sumCount = webPageParser.parserListPage(listDownloadHtml);
+        insertToTableCount += succCount;
+        repeatCount += passCount;
+        listPageRowCount += sumCount;
 
         # step 3 每次从PC_WaitForCrawl表中取出一条数据，进行下载解析，解析出详情页面的URL和相关信息
+        crawlUrl = dbo.getWaitByTop1();
+
+        infoPageHtmlDoc = webPageDownloader.htmlDownload(crawlUrl.url);
+        infoDownloadHtml = DownloadHtml();  # 下载后的详情页实体
+        infoDownloadHtml.url = crawlUrl.url;
+        infoDownloadHtml.htmlDoc = infoPageHtmlDoc;
+
+        # 解析详情页面，并把数据保存到数据库中
+        infoCount = webPageParser.parserInfoPage(infoDownloadHtml,crawlUrl);
+
+        startUrl = startUrl[:-6] + str(i+1) + startUrl[-5:];
+
+
+        print("[<Aries.py>提示]:第",i,"次循环结束，共解析出条列表页数据，成功插入条，重复条！");
+
 
 
 
