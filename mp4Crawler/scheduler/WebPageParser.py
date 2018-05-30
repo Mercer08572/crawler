@@ -63,24 +63,36 @@ class WebPageParser:
         original = tagA.string;
 
         # 解析出描述，“[]”中的内容
-        leftIndex = original.index("[");
-        rightIndex = original.index("]");
-        rightIndex = rightIndex + 1;
-        memo = original[leftIndex:rightIndex];
+        leftIndex = original.find("[");
+        rightIndex = original.find("]");
+        memo = None;  # 描述
+        if leftIndex != -1 and rightIndex != -1:
+            rightIndex = rightIndex + 1;
+            memo = original[leftIndex:rightIndex];
+            # 去除 [] 获取文本内容
+            memo = memo[1:-1];
+        else:
+            memo = "未知[见name]";
 
-        # 去除 [] 获取文本内容
-        memo = memo[1:-1];
 
         # 原始信息去除 后面 [] 的信息
         original = original[0:leftIndex];
 
         # 解析出年份
-        firstSpace = original.index(" ");
-        years = original[0:firstSpace];
+        years = None;
+        name = None;
+        firstSpace = original.find(" ");
+        if firstSpace == -1:  # 没有找到
+            years = "未知[见name]";
+            name = original;
+        else:
+            years = original[0:firstSpace];
+            # 解析出标题
+            nameIndex = firstSpace + 1;
+            name = original[nameIndex:]
 
-        # 解析出标题
-        nameIndex = firstSpace + 1;
-        name = original[nameIndex:]
+
+
 
         # 解析出URL路径
         url = tagA.get("href");

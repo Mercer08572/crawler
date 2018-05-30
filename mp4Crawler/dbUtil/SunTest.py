@@ -151,4 +151,24 @@ and they lived at the bottom of a well.</p>
 
 # ts.sqlstest();
 
-ts.crawlTest("http://www.mp4ba.net/forum-mp4ba-1-1.html");
+# ts.crawlTest("http://www.mp4ba.net/forum-mp4ba-1-1.html");
+
+webPageParser = WebPageParser();
+
+
+
+# wait = webPageParser.parserInfo('<a href="http://www.mp4ba.net/thread-2421-1-14.html" onclick="atarget(this)" class="s xst">国产凌凌漆.From.Beijing.with.Love.1994.BD1080P.X264.AAC.Cantonese&amp;amp;Mandarin.CH</a>')
+#
+# print(wait);
+
+
+html = WebPageDownloader();
+htmlDoc = html.htmlDownload("http://www.mp4ba.net/") # 列表页
+soup = BeautifulSoup(htmlDoc, "html.parser");
+detailUrlList = soup.find_all("a","s xst");
+for url in detailUrlList:
+    wait = webPageParser.parserInfo(url);
+    print(wait.name);
+    print(wait.years);
+    print(wait.memo);
+    print()
