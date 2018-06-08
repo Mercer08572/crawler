@@ -54,7 +54,7 @@ class WebPageParser:
             index += 1;
 
         count, passCount = dbo.batchExecSqlJustForMp4ba(sqlList, waitCrawlUrlList); # 批量执行拼接的SQL语句
-        print("[<WebPageParser>提示]:批量SQL共", len(sqlList)+1, "条，重复", passCount, "条，成功插入", count, "条!")
+        print("[<WebPageParser>提示]:批量SQL共", len(sqlList), "条，重复", passCount, "条，成功插入", count, "条!")
         return count, passCount, len(sqlList);
 
 
@@ -98,9 +98,9 @@ class WebPageParser:
         url = tagA.get("href");
 
         # 封装进 waitList 中
-        wait.name = name;
+        wait.name = name.replace("'","");
         wait.years = years;
-        wait.memo = memo;
+        wait.memo = memo.replace("'","");
         wait.url = url;
 
         # 临时赋值 ， 逻辑还没有想明白
@@ -140,15 +140,32 @@ class WebPageParser:
             downloadUrl = DownloadUrl();  # URL储存实体
 
             magnetUrl = div.find("a").get("href");  # 磁力链接地址
-            name1 = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling;  # name1 [集数、]
-            name2 = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling;
+            try:
+                # name1 = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling;  # name1
+                # name2  = div.previous_sibling.previous_sibling.previous_sibling; # name2
+                name1 = div.find_previous_sibling("br").previous_sibling;
+                name2 = name1.find_previous_sibling("br").previous_sibling;
+            except Exception as e:
+                name1 = div.a.previous_sibling;
+                name2 = name1;
+
+            if name1 is None:
+                name1 = "名称1解析失败";
+            if name2 is None:
+                name2 = "名称2解析失败";
+
+            if len(str(name1)) > 100:
+                name1 = name1[:100];
+
+            if len(str(name2)) > 100:
+                name2 = name2[:100];
 
             # 填入数据
             downloadUrl.id = urlIndex;
             downloadUrl.rdid = usefulData.id;
-            downloadUrl.name1 = name1;
-            downloadUrl.name2 = name2;
-            downloadUrl.url = magnetUrl;
+            downloadUrl.name1 = str(name1);
+            downloadUrl.name2 = str(name2);
+            downloadUrl.url = str(magnetUrl);
 
             # 加入list中
             urlList.append(downloadUrl);

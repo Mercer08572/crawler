@@ -51,17 +51,44 @@ class DBOperation:
 
         return flag;
 
-    def addCompleteTableNew(self,crawlUrl,sqlList,index):
+    def addCompleteTableNew(self,crawlUrl,sqlList):
         # 拼接批量插入已爬表的SQL
-        insertSql = " INSERT INTO PC_CompleteCrawl(id,url,createDate,typeid,years,name,memo) values (%d,'%s','%s',%d,'%s','%s','%s')" % (
-            index, crawlUrl.url, crawlUrl.createDate, crawlUrl.typeid, crawlUrl.years, crawlUrl.name, crawlUrl.memo);
+        # insertSql = " INSERT INTO PC_CompleteCrawl(id,url,createDate,typeid,years,name,memo) values (%d,'%s','%s',%d,'%s','%s','%s')" % (
+        #     index, crawlUrl.url, crawlUrl.createDate, crawlUrl.typeid, crawlUrl.years, crawlUrl.name, crawlUrl.memo);
+
+        insertSql = " INSERT INTO PC_CompleteCrawl(id,url,createDate,typeid,years,name,memo) SELECT id,url,createDate,typeid,years,name,memo FROM PC_WaitForCrawl WHERE id = %d" % (crawlUrl.id);
+        deleteSql = " DELETE FROM PC_WaitForCrawl WHERE id = %d" % (crawlUrl.id) ;
+
         sqlList.append(insertSql);
+        sqlList.append(deleteSql);
         return sqlList;
 
-    def getWaitByTop1(self):
-        """根据id获取待爬表实体"""
+    def getWaitByTopNum(self,size):
+        """获取第一条待爬表实体"""
+        cuList = [];  # 待爬实体列表
+        findSql = " SELECT id,url,createDate,typeid,years,name,memo FROM PC_WaitForCrawl LIMIT 0,%d " % (size);
+        dataTup = self._dbhepl.querySql(findSql);
+        # data = dataTup[0];
+
+        for data in dataTup:
+            crawlUrl = CrawlUrl();
+            # 封装
+            crawlUrl.id = data[0];
+            crawlUrl.url = data[1];
+            crawlUrl.createDate = data[2];
+            crawlUrl.typeid = data[3];
+            crawlUrl.years = data[4];
+            crawlUrl.name = data[5];
+            crawlUrl.memo = data[6];
+            # 加入list中
+            cuList.append(crawlUrl);
+
+        return cuList;
+
+    def getWaitById(self,id):
+        """根据ID获取待爬表实体"""
         crawlUrl = CrawlUrl();
-        findSql = " SELECT id,url,createDate,typeid,years,name,memo FROM PC_WaitForCrawl LIMIT 0,1 ";
+        findSql = " SELECT id,url,createDate,typeid,years,name,memo FROM PC_WaitForCrawl WHERE id = %d " % (id);
         dataTup = self._dbhepl.querySql(findSql);
         data = dataTup[0];
         # 封装
@@ -79,7 +106,7 @@ class DBOperation:
         # 删除待爬表
         # dbhelp = MysqlDMLUtil();
 
-        exeSql = " DELETE FROM PC_WaitForCrawl WHERE id = " + id;
+        exeSql = " DELETE FROM PC_WaitForCrawl WHERE id = " + str(id);
 
         flag = self._dbhepl.execSql(exeSql);
         return flag;
@@ -118,7 +145,7 @@ class DBOperation:
         return count, passCount;
 
     def _checkDateBeforeAdd(self,crawlUrl,cursor):
-        # 检查数据，
+        # 检查数据，传递连接，不关闭
 
         isPass = 1;  # 0 不通过   1 通过
 

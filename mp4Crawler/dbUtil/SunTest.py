@@ -70,32 +70,48 @@ class SunTest:
     def crawTest(self):
         html = WebPageDownloader();
         # parser = WebPageParser();
-        htmlDoc = html.htmlDownload("http://www.mp4ba.net/") # 列表页
-        # htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5986-1-1.html") # 明细页
+        # htmlDoc = html.htmlDownload("http://www.mp4ba.net/") # 列表页
+        # htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5995-1-1.html") # 明细页
+        htmlDoc = html.htmlDownload("http://www.mp4ba.net/thread-5342-1-1.html");
         # parser.parserListPage(htmlDoc);
         soup = BeautifulSoup(htmlDoc,"html.parser")
         # print(soup)
-        # divtop = soup.find_all(id = "top");
-        # for div in divtop:
-            # previous = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling;  # name1
-            # previous  = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling; # name2
-            # print(previous);
-            # print(div.find("a").get("href"));
+        divtop = soup.find_all(id = "top");
+        for div in divtop:
+            name1 = None;
+            name2 = None;
+            try:
+                # name1 = div.previous_sibling.previous_sibling.previous_sibling.previous_sibling.previous_sibling;  # name1
+                # name1 = div.previous_element;  # name1
+                # name2  = div.previous_sibling.previous_sibling.previous_sibling; # name2
+                # name2  = div.previous_element.previous_element; # name2
 
-        spans = soup.find_all("span","xg1 num");
-        for span in spans:
-            # sps = span.previous_sibling;
+                name1 = div.find_previous_sibling("br").previous_sibling;
+                name2 = name1.find_previous_sibling("br").previous_sibling;
+            except Exception as e:
+                name1 = div.a.previous_sibling;
+                name2 = name1;
 
-            print(span);
+            # nam1 = div.find_previous_siblings("br");
 
-            print(span.previous_sibling);
-            spsa = span.parent;
-            print(spsa);
 
-            spsas = spsa.span;
-            spsast = spsas.string;
-            print(spsas);
-            print(spsast[1:-1],"\n")
+            print(name1,name2);
+
+
+        # spans = soup.find_all("span","xg1 num");
+        # for span in spans:
+        #     # sps = span.previous_sibling;
+        #
+        #     print(span);
+        #
+        #     print(span.previous_sibling);
+        #     spsa = span.parent;
+        #     print(spsa);
+        #
+        #     spsas = spsa.span;
+        #     spsast = spsas.string;
+        #     print(spsas);
+        #     print(spsast[1:-1],"\n")
 
             # print(sps);
             # print(span,"\n");
@@ -118,6 +134,9 @@ class SunTest:
 
 
 ts = SunTest();
+
+ts.crawTest();
+
 # url = ts.joinurl();
 # print(url);
 #
@@ -153,7 +172,7 @@ and they lived at the bottom of a well.</p>
 
 # ts.crawlTest("http://www.mp4ba.net/forum-mp4ba-1-1.html");
 
-webPageParser = WebPageParser();
+# webPageParser = WebPageParser();
 
 
 
@@ -162,13 +181,13 @@ webPageParser = WebPageParser();
 # print(wait);
 
 
-html = WebPageDownloader();
-htmlDoc = html.htmlDownload("http://www.mp4ba.net/") # 列表页
-soup = BeautifulSoup(htmlDoc, "html.parser");
-detailUrlList = soup.find_all("a","s xst");
-for url in detailUrlList:
-    wait = webPageParser.parserInfo(url);
-    print(wait.name);
-    print(wait.years);
-    print(wait.memo);
-    print()
+# html = WebPageDownloader();
+# htmlDoc = html.htmlDownload("http://www.mp4ba.net/") # 列表页
+# soup = BeautifulSoup(htmlDoc, "html.parser");
+# detailUrlList = soup.find_all("a","s xst");
+# for url in detailUrlList:
+#     wait = webPageParser.parserInfo(url);
+#     print(wait.name);
+#     print(wait.years);
+#     print(wait.memo);
+#     print()
