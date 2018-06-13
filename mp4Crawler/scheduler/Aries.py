@@ -30,7 +30,7 @@ class Aries:
             opts, args = getopt.getopt(sys.argv[1:],"ildt:", ["init", "list", "detail", "type="]);
 
             if len(opts) == 0 :
-                print("[<Aries.py>错误]：请输入参数");
+                print("[<Aries.py>错误]：请输入参数\n");
                 return;
 
 
@@ -58,7 +58,10 @@ class Aries:
                 moveTypeName = "海外电影";
             elif typeid == 6:
                 moveTypeName = "动画电影";
-            print("目前爬取的电影类型为：",moveTypeName);
+
+            nowDateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            print("[!!!]开始时间：", nowDateTime)
+            print("目前爬取的电影类型为：", moveTypeName, "\n");
 
             # typeid = 5;  # 爬取的电影id    爬取不同类型的电影需要修改这里的属性         PS:注意
             # # 1、国产电影 2、港台电影 3、欧美电影 4、日韩电影 5、海外电影 6、动画电影
@@ -69,7 +72,7 @@ class Aries:
             for opt in opts:
                 if "-i" in opt:
                     # 进行初始化操作
-                    print("[<Aries.py>提示]：进行初始化PC_Status表");
+                    print("[<Aries.py>提示]：进行初始化PC_Status表\n");
 
                     # step 1 解析status状态，之后的页面爬取都是从PC_Status表获取相关参数的
                     self.initStatus();
@@ -77,14 +80,14 @@ class Aries:
                     break;
                 if "-l" in opt:
                     # 进行列表页的解析
-                    print("[<Aries.py>提示]：进行列表页的解析");
+                    print("[<Aries.py>提示]：进行列表页的解析\n");
                     # step 2 解析列表页
                     self.listInfoParser(crawlStatus);
 
                     break;
                 if "-d" in opt:
                     # 进行详情页的解析
-                    print("[<Aries.py>提示]：进行详情页的解析");
+                    print("[<Aries.py>提示]：进行详情页的解析\n");
                     # step 3 每次从PC_WaitForCrawl表中取出一条数据，进行下载解析，解析出详情页面的URL和相关信息
                     # crawlUrl = dbo.getWaitByTop1();
                     self.detailInfoParser(crawlStatus);  # step3 step4 在方法内执行
@@ -92,9 +95,10 @@ class Aries:
                     break;
 
         except getopt.GetoptError as ge:
-            print("[<Aries.py>错误]：输入的参数有误，请重新数据!");
+            print("[<Aries.py>错误]：输入的参数有误，请重新数据!\n");
             # raise ge;
-
+        nowDateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime());
+        print("[!!!]结束时间：", nowDateTime, "\n");
 
 
     def initStatus(self):
@@ -113,7 +117,7 @@ class Aries:
         endTime = time.time();
         diffTime = endTime - startTime;
 
-        print("[<PC_Status>提示]：PC_Status表初始化成功!耗时%.2f秒" % (diffTime));
+        print("[<PC_Status>提示]：PC_Status表初始化成功!耗时%.2f秒\n" % (diffTime));
 
         return;
 
@@ -130,9 +134,14 @@ class Aries:
         for i in range(crawlStatus.step):
             # step 2 解析列表页，获取详细页的相关数据和URL放入数据库PC_WaitForCrawl表中
 
-            pageNumber = startUrl[-6:-5];
+            # pageNumber = startUrl[-6:-5]; # pageNumber修改取值方式
+            pointIndex = startUrl.rfind(".");
+            lastIndex = startUrl.rfind("-");
+            pageNumber = startUrl[lastIndex+1:pointIndex];
+
             pageNumber = int(pageNumber);
             if pageNumber > crawlStatus.pageNum:
+                print("[<Aries.py提示>]:该类型的电影已经爬取完毕！")
                 break;
 
             # startUrl = crawlStatus.endUrl;
@@ -163,7 +172,7 @@ class Aries:
         print("│       成功：%d条                      " % (insertToTableCount));
         print("│       重复：%d条                      " % (repeatCount));
         print("│       耗时：%.2f秒                    " % (diffTime));
-        print("└-------------------------------------");
+        print("└-------------------------------------\n");
 
         return;
 
@@ -196,13 +205,13 @@ class Aries:
                     self._dbo.addCompleteTableNew(crawlUrl, insertToCompSqlList);  # 方法中已经加入了删除PC_WaitForCrawl表数据的SQL
                     # self._dbo.deleteWaitFor(crawlUrl.id);
 
-                    print("本次循环成功解析%d条记录" % (infoCount));
+                    # print("本次循环成功解析%d条记录\n" % (infoCount));
                 connt = self._dbo.batchExecSql(insertToCompSqlList);
                 print("%d条数据已从PC_WaitForCrawl表插入到PC_CompleteCrawl表中,PC_WaitForCrawl表数据已删除" % (connt / 2) )
 
 
             else:
-                print("[<Aries.py>提示]:PC_WaitForCrawl表已爬空");
+                print("[<Aries.py>提示]:PC_WaitForCrawl表已爬空\n");
                 break;
 
 
@@ -213,15 +222,18 @@ class Aries:
         print("│               状态报告              ");
         print("│        总记录数：%d条                  " % (infoCountSum));
         print("│        耗时：%.2f秒                  " % (diffTime));
-        print("└-------------------------------------");
+        print("└-------------------------------------\n");
 
         return;
 
 aries = Aries();
 # aries.initStatus();
-crawlStatus = aries._dbo.getStatusById(5);
-# aries.listInfoParser(crawlStatus);
+crawlStatus = aries._dbo.getStatusById(1);
+aries.listInfoParser(crawlStatus);
 
-aries.detailInfoParser(crawlStatus);
+# aries.detailInfoParser(crawlStatus);
+
+# for i in range(6):
+    # aries.initStatus();
 
 

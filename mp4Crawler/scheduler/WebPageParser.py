@@ -6,6 +6,7 @@
 import math
 import time
 
+import re
 from bs4 import BeautifulSoup
 
 from mp4Crawler.entity.CrawlStatus import CrawlStatus
@@ -27,7 +28,12 @@ class WebPageParser:
         waitCrawlUrlList = []; # 为了减轻数据库负担，减少打开关闭连接的次数
 
         # 根据下载页面的URL地址可以获取电影类型 http://www.mp4ba.net/forum-mp4ba-2-1.html
-        typeid = downUrl[-8:-7];
+        # typeid = downUrl[-8:-7];
+
+        match = re.search("-\d-",downUrl);
+        typeidOrig = match.group();
+        typeid = typeidOrig[1:-1];
+
         typeid = int(typeid);
 
         # 解析列表页数据，获取待爬页面
@@ -54,7 +60,7 @@ class WebPageParser:
             index += 1;
 
         count, passCount = dbo.batchExecSqlJustForMp4ba(sqlList, waitCrawlUrlList); # 批量执行拼接的SQL语句
-        print("[<WebPageParser>提示]:批量SQL共", len(sqlList), "条，重复", passCount, "条，成功插入", count, "条!")
+        # print("[<WebPageParser>提示]:批量SQL共", len(sqlList), "条，重复", passCount, "条，成功插入", count, "条!\n")
         return count, passCount, len(sqlList);
 
 
