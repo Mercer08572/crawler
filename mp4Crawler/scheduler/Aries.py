@@ -155,7 +155,8 @@ class Aries:
             repeatCount += passCount;
             listPageRowCount += sumCount;
 
-            startUrl = startUrl[:-6] + str(pageNumber + 1) + startUrl[-5:];
+            # startUrl = startUrl[:-6] + str(pageNumber + 1) + startUrl[-5:];
+            startUrl = startUrl[:lastIndex+1] + str(pageNumber + 1) + startUrl[pointIndex:];
 
             print("[<Aries.py>提示]:第%d次循环结束，共解析出%d条列表页数据，成功插入%d条，重复%d条！" % (i+1,sumCount,succCount,passCount));
 
