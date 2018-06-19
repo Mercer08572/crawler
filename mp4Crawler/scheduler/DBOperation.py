@@ -66,7 +66,7 @@ class DBOperation:
     def getWaitByTopNum(self,size):
         """获取第一条待爬表实体"""
         cuList = [];  # 待爬实体列表
-        findSql = " SELECT id,url,createDate,typeid,years,name,memo FROM PC_WaitForCrawl LIMIT 0,%d " % (size);
+        findSql = " SELECT id,url,createDate,typeid,years,name,memo FROM PC_WaitForCrawl ORDER BY id LIMIT 0,%d " % (size);
         dataTup = self._dbhepl.querySql(findSql);
         # data = dataTup[0];
 

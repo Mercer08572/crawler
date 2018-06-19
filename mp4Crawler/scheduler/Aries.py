@@ -178,7 +178,7 @@ class Aries:
         return;
 
     def detailInfoParser(self,crawlStatus):
-        loopNum = 1;
+        loopNum = 5;
 
         infoCountSum = 0;  # 详情页解析数
 
@@ -190,7 +190,7 @@ class Aries:
 
         for i in range(loopNum):
             # cuList = self._dbo.getWaitByTopNum(crawlStatus.step);
-            cuList = self._dbo.getWaitByTopNum(1);
+            cuList = self._dbo.getWaitByTopNum(5);
             if len(cuList) != 0:
                 for crawlUrl in cuList:
                     infoPageHtmlDoc = self._webPageDownloader.htmlDownload(crawlUrl.url);
@@ -230,11 +230,13 @@ class Aries:
 aries = Aries();
 # aries.initStatus();
 crawlStatus = aries._dbo.getStatusById(1);
-aries.listInfoParser(crawlStatus);
+# aries.listInfoParser(crawlStatus);
 
-# aries.detailInfoParser(crawlStatus);
+aries.detailInfoParser(crawlStatus);
 
 # for i in range(6):
     # aries.initStatus();
+
+
 
 

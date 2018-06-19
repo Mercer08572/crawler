@@ -161,10 +161,10 @@ class WebPageParser:
                 name2 = "名称2解析失败";
 
             if len(str(name1)) > 100:
-                name1 = name1[:100];
+                name1 = str(name1)[:100];
 
             if len(str(name2)) > 100:
-                name2 = name2[:100];
+                name2 = str(name2)[:100];
 
             # 填入数据
             downloadUrl.id = urlIndex;
