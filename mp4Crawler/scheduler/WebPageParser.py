@@ -169,8 +169,8 @@ class WebPageParser:
             # 填入数据
             downloadUrl.id = urlIndex;
             downloadUrl.rdid = usefulData.id;
-            downloadUrl.name1 = str(name1);
-            downloadUrl.name2 = str(name2);
+            downloadUrl.name1 = str(name1.replace('\'', ''));
+            downloadUrl.name2 = str(name2.replace('\'', ''));
             downloadUrl.url = str(magnetUrl);
 
             # 加入list中
